@@ -1,8 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/prisma/client";
 import { issueSchema } from "../../ValidationSchemas";
+import { getServerSession } from "next-auth";
+import authOptions from "@/app/auth/AuthOptions";
 
 export async function POST(request: NextRequest) {
+  const session = await getServerSession(authOptions);
+  if (!session)
+    return NextResponse.json(
+      {
+        error: "You must be signed in to create an issue.",
+      },
+      { status: 401 }
+    );
+
   const body = await request.json();
   const validation = issueSchema.safeParse(body);
 
