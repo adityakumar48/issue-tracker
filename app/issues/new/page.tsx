@@ -16,6 +16,7 @@ type IssueForm = z.infer<typeof createIssueSchema>;
 
 const NewIssuePage = () => {
   const router = useRouter();
+
   const {
     register,
     control,
@@ -27,19 +28,6 @@ const NewIssuePage = () => {
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const onSubmit = () => {
-    handleSubmit(async (data) => {
-      try {
-        setIsSubmitting(true);
-        await axios.post("/api/issues", data);
-        router.push("/issues");
-      } catch (error) {
-        setIsSubmitting(false);
-        setError("An Unexpected Error Occurred");
-      }
-    });
-  };
-
   return (
     <div className="max-w-xl ">
       {error && (
@@ -47,7 +35,19 @@ const NewIssuePage = () => {
           <Callout.Text>{error}</Callout.Text>
         </Callout.Root>
       )}
-      <form onSubmit={onSubmit} className="space-y-3 ">
+      <form
+        onSubmit={handleSubmit(async (data) => {
+          try {
+            setIsSubmitting(true);
+            await axios.post("/api/issues", data);
+            router.push("/issues");
+          } catch (error) {
+            setIsSubmitting(false);
+            setError("An Unexpected Error Occurred");
+          }
+        })}
+        className="space-y-3 "
+      >
         <TextField.Root>
           <TextField.Input placeholder="Title" {...register("title")} />
         </TextField.Root>
